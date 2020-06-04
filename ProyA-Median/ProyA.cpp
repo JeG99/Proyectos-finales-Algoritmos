@@ -1,21 +1,32 @@
-// José Elías Garza Vázquez - A00824494
+// Jose Elias Garza Vazquez - A00824494
 #include <iostream>
 using namespace std;
 
-float merge(int *a, int *b, int start, int end) {
-    int middle = (start + end) / 2;
-    int i = start, j = start, k = start;
-    int temp[200];
-    while(i <= middle && j + middle <= end) {
-        temp[k++] = (a[i] < b[j] ? a[i++]:b[j++]);
+double median(int* arr, int n){
+    return (double)(n % 2 == 0 ? ((arr[(n - 1) / 2] + arr[n / 2]) / 2.0) : arr[n / 2]);
+}
+
+double median2Arrays(int* A, int* B, int n){
+
+    // umbral
+    if(n == 1){
+        return (double)((A[0] + B[0]) / 2.0);
     }
-    while(i <= middle) {
-        temp[k++] = a[i++];
+    if(n == 2){
+        return (double)((max(A[0], B[0]) + min(A[1], B[1])) / 2.0);
     }
-    while(j + middle <= end) {
-        temp[k++] = b[j++];
+    double Am = median(A, n), Bm = median(B, n);
+    if(Am == Bm){
+        return Am;
+    } 
+    
+    bool isEven = n % 2 == 0;
+    if(Am < Bm) {   
+        return (double)(isEven ? (median2Arrays(A + (n / 2 - 1), B, (n - n / 2 + 1))) : (median2Arrays(A + (n / 2), B, n - (n / 2))));       
+    } else{
+        return (double)(isEven ? (median2Arrays(B + (n / 2 - 1), A, (n - n / 2 + 1))) : (median2Arrays(B + (n / 2), A, n - (n / 2))));
     }
-    return  ((float)temp[middle - 1] + (float)temp[middle]) / 2;
+
 }
 
 int main() {
@@ -34,23 +45,45 @@ int main() {
         for(int j2 = 0; j2 < n; j2++) {
             cin >> b[j2];
         }
-        /*
-        cout << "Median case " << i + 1 << ": ";
-        printf("%.2f", merge1(a, b, 0, 2 * n));
-        cout << '\n';
-        */
-        snprintf(buff, sizeof(buff), "%.2f", merge(a, b, 0, 2 * n));
+        // add output to out string
+        snprintf(buff, sizeof(buff), "%.2f", median2Arrays(a, b, n));
         out += "Median case " + to_string(i + 1) + ": " + buff + '\n';
     }
     cout << out;
-
-    /*
-    input:
-        2 5 1 4 7 8 10 2 9 11 14 15 3 3 4 5 1 2 6
-    output:
-        Median case 1: 8.50
-        Median case 2: 3.50
-    */
-
     return 0;
+
+/*
+input:
+7 
+5 
+1 4 7 8 10 
+2 9 11 14 15 
+3 
+3 4 5 
+1 2 6 
+4 
+1 2 3 4 
+5 6 7 8
+4 
+5 6 7 8
+1 2 3 4
+6 
+2 3 5 7 8 56
+1 2 3 47 87 100
+5
+0 2 4 6 8
+1 3 5 7 9
+4
+0 2 4 6
+1 3 5 7
+
+output:
+Median case 1: 8.50
+Median case 2: 3.50
+Median case 3: 4.50
+Median case 4: 4.50
+Median case 4: 6.00
+Median case 5: 4.50
+Median case 4: 3.50
+*/
 }
